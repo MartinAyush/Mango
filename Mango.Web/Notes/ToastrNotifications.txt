@@ -1,0 +1,8 @@
+﻿1. Add CDN for for both css and js
+
+2. create a partial view to render both success and error messages.
+
+3. render the partial view in _layout.cshtml under RenderBody()
+	<partial name="_ToasterNotificationsPartial" />
+
+4. use TempData because it hold data for single session only

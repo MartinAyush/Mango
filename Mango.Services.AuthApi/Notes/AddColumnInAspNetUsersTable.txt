@@ -1,0 +1,9 @@
+﻿1. Create a model (eg ApplicationUser) and inherit it from IdentityUser
+
+2. Tell DbContext we are using this new ApplicationUser
+
+	AppDbContext : IdentityDbContext<ApplicationUser>
+
+3. Also while adding identity to the app.services, use this ApplicationUser
+
+	builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
