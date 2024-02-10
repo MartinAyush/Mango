@@ -20,12 +20,13 @@ namespace Mango.Web.Controllers
             if (result != null && result.IsSuccess)
             {
                 coupons = JsonConvert.DeserializeObject<List<CouponDto>>(result.Result.ToString());
+                return View(coupons);
             }
             else
             {
                 TempData["error"] = result.Message;
             }
-            return View(coupons);
+            return View();
         }
 
 		public async Task<IActionResult> CouponCreate(CouponDto couponDto)

@@ -1,0 +1,21 @@
+﻿1. Add Necessary DTOs of AuthApi project.
+
+2. Create Auth Controller Reponsible for Login, Register and Logout and their UI.
+
+3. Create a AuthService, which will call AuthApi microservice APIs using baseService
+	If the login is successfull, Sign in a user in .NET Identity. Through this we can access HttpContext.User.isAuthenticated
+
+4. Create a TokenProvider helper service, which will help Get, Add and delete of token from cookies.
+	If the login is successful, store token in cookies.
+
+5. Add Authentication in serivces and middleware
+
+- builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromHours(10);
+                options.LoginPath = "/Auth/Login";
+                options.AccessDeniedPath = "/Auth/AccessDenied";
+            });
+
+
+- app.UseAuthentication();

@@ -11,12 +11,32 @@ namespace Mango.Services.AuthApi.Services
         private readonly AppDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ITokenRepository _tokenRepository;
 
-        public AuthService(AppDbContext dbContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AuthService(AppDbContext dbContext, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ITokenRepository tokenRepository)
         {
             this._dbContext = dbContext;
             this._userManager = userManager;
             this._roleManager = roleManager;
+            this._tokenRepository = tokenRepository;
+        }
+
+        public async Task<bool> AssignRole(string email, string role)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user != null)
+            {
+                var roleExists = await _roleManager.RoleExistsAsync(role);
+                if (!roleExists)
+                {
+                    var result = await _roleManager.CreateAsync(new IdentityRole(role));
+                }
+
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
+
+                return addToRoleResult.Succeeded;
+            }
+            return false;
         }
 
         public async Task<LoginResponseDto> Login(LoginRequestDto requestDto)
@@ -30,6 +50,8 @@ namespace Mango.Services.AuthApi.Services
                 if (success)
                 {
                     // Generate Token
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var jwtToken = _tokenRepository.GenerateToken(user, roles);
 
                     var userdto = new UserDto()
                     {
@@ -42,7 +64,7 @@ namespace Mango.Services.AuthApi.Services
                     return  new()
                     {
                         User = userdto,
-                        Token = "",
+                        Token = jwtToken,
                     };
                 }
             }

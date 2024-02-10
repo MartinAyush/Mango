@@ -1,0 +1,92 @@
+﻿***** Step 1: Setup Identity *****
+
+1. Install package
+
+Microsoft.aspnetcore.identity.entityframeworkcore
+
+2. Setup db for Identity
+
+- setup connection string in appsettings.json file
+- Make a appDbContext and inherit it from IdentityDbContext<IdentityUser>
+
+3. Add Identity into services
+
+- In program.cs
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
+Here ApplicationUser is child of IdentityUser
+
+4. Add Controller for Authentication
+
+- Use UserManager class provided by identity to manager IdentityUsers
+- Use RoleManager class provided by Identity to manager role of users
+- Make necessary API [eg. Register, Login, AssignRoles] using above helper classes
+
+***** Step 2: Create Token *****
+
+- Use JwtSecurityTokenHandler to write token to string and create token
+- Add necessary details to claims eg. Email, Name, userId, roles
+- using SecurityTokenDescriptor create a token
+
+***** Step 3: Integrate token into loginResponseDto *****
+
+- Check if user is valid, then create a token and pass it to LoginResponseDto
+
+
+
+
+***** Add Authentication in other microservices *****
+
+1. Add Authorize attribute in controller or action method
+
+2. Add Authentication in serivces and middleware
+
+- builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"])),
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["Jwt:Audience"]
+                };
+            });
+            builder.Services.AddAuthorization();
+
+
+	app.UseAuthentication(); 
+
+
+
+
+
+***** Adding Authentication in swagger *****
+- builder.Services.AddSwaggerGen(options =>
+			{
+				var securityScheme = new OpenApiSecurityScheme
+				{
+					Name = "JWT Authentication",
+					Description = "Enter a valid JWT bearer token",
+					In = ParameterLocation.Header,
+					Type = SecuritySchemeType.Http,
+					Scheme = "bearer",
+					BearerFormat = "JWT",
+					Reference = new OpenApiReference
+					{
+						Id = JwtBearerDefaults.AuthenticationScheme,
+						Type = ReferenceType.SecurityScheme
+					}
+				};
+
+				options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+				options.AddSecurityRequirement(new OpenApiSecurityRequirement
+	            {
+		            {securityScheme, new string[] {} }
+	            });
+			});

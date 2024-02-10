@@ -2,6 +2,8 @@
 using Mango.Services.CouponApi.Data;
 using Mango.Services.CouponApi.Models;
 using Mango.Services.CouponApi.Models.DTO;
+using Mango.Web.Utitlity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -10,6 +12,7 @@ namespace Mango.Services.CouponApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CouponApiController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
@@ -89,6 +92,7 @@ namespace Mango.Services.CouponApi.Controllers
 
         [HttpPost]
         [Route("CreateCoupon")]
+        [Authorize(Roles = StaticDetails.RoleAdmin)]
         public ResponseDto CreateCoupon([FromBody] CouponDto couponDto)
         {
             try
@@ -113,7 +117,8 @@ namespace Mango.Services.CouponApi.Controllers
 
         [HttpPut]
         [Route("UpdateCoupon")]
-        public ResponseDto UpdateCoupon([FromBody] CouponDto couponDto)
+		[Authorize(Roles = StaticDetails.RoleAdmin)]
+		public ResponseDto UpdateCoupon([FromBody] CouponDto couponDto)
         {
             try
             {
@@ -137,7 +142,8 @@ namespace Mango.Services.CouponApi.Controllers
 
         [HttpDelete]
         [Route("DeleteCoupon")]
-        public ResponseDto DeleteCoupon([FromQuery] int id)
+		[Authorize(Roles = StaticDetails.RoleAdmin)]
+		public ResponseDto DeleteCoupon([FromQuery] int id)
         {
             try
             {
