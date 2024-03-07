@@ -1,0 +1,36 @@
+﻿Step 1: Add package
+	IdentityModel
+    Microsoft.AspNetCore.Authentication.JwtBearer
+    Ocelot
+
+Step 2: Add Ocelot into service and middleware
+
+    builder.Services.AddOcelot(builder.Configuration);
+    app.UseOcelot().GetAwaiter().GetResult();
+
+Step 3: Create Ocelot.json & Ocelot.Production.json and Add API configuration into it.
+
+    * Basic configration where base URL is the Gateway launch URL
+    * Upstream - Web/UI 
+    * Downstream - Microservice/Api
+    * if the URL is same then multiple endpoints can be coupled by adding respective HttpMethod.
+
+    {
+    "Routes": [
+        {
+          "DownstreamPathTemplate": "/api/ProductApi/GetAll",
+          "DownstreamScheme": "https",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "localhost",
+              "Port": 7212
+            }
+          ],
+          "UpstreamPathTemplate": "/api/ProductApi/GetAll",
+          "UpstreamHttpMethod": [ "Get" ]
+        },
+        ],
+      "GlobalConfiguration": {
+        "BaseUrl": "https://localhost:7777"
+      }
+    }

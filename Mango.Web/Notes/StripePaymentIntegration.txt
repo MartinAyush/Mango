@@ -1,0 +1,12 @@
+﻿Step 0: Install the following package:
+   * Stripe.net
+
+Step 1: Store API key in appsettings and perform the following configuration:
+   Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+1. Create a Stripe session.
+2. Using the session, store the sessionId and session.Url into the database.
+3. Redirect the user to that URL.
+4. Check if the payment is successful or not using the payment intent id.
+5. If the status is completed, redirect to the order completed URL.
+6. When creating coupons, use the CouponService to create coupons in Stripe as well, which will be displayed during checkout.

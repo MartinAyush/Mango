@@ -1,0 +1,16 @@
+﻿Prerequisites:
+  * Add appsettings.Production.json to all the microservices.
+  * Ensure an Azure account is the same as the Visual Studio account.
+
+Step 0: Deploy Databases for all the microservices
+  * Manually create databases in Azure SQL Databases.
+  * Update the connection string (ADO.NET (SQL authentication)) in the microservices.
+  * Save the connection details in the local environment.
+
+Step 1: Deploy Microservices, UI, and Gateway
+  * Create a publish profile and publish the changes.
+  * In Azure App Services, add the environment variable ASPNETCORE_ENVIRONMENT=Production for all the Microservices, UI, and Gateway.
+
+Step 2: Post-deploy changes
+  * Change the production/deployed URL of the microservices, UI, and gateway, then republish the changes.
+  * Perform manual testing.

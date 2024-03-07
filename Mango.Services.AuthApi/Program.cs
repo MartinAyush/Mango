@@ -1,4 +1,5 @@
 
+using Mango.MessageBus;
 using Mango.Services.AuthApi.Data;
 using Mango.Services.AuthApi.Models;
 using Mango.Services.AuthApi.Services;
@@ -25,6 +26,7 @@ namespace Mango.Services.AuthApi
 
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+            builder.Services.AddScoped<IMessageBus, MessageBus.MessageBus>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -34,11 +36,12 @@ namespace Mango.Services.AuthApi
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AUTH API");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseHttpsRedirection();
 

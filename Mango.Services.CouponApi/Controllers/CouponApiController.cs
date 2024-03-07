@@ -2,7 +2,6 @@
 using Mango.Services.CouponApi.Data;
 using Mango.Services.CouponApi.Models;
 using Mango.Services.CouponApi.Models.DTO;
-using Mango.Web.Utitlity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -92,7 +91,7 @@ namespace Mango.Services.CouponApi.Controllers
 
         [HttpPost]
         [Route("CreateCoupon")]
-        [Authorize(Roles = StaticDetails.RoleAdmin)]
+        [Authorize(Roles = "ADMIN")]
         public ResponseDto CreateCoupon([FromBody] CouponDto couponDto)
         {
             try
@@ -100,6 +99,19 @@ namespace Mango.Services.CouponApi.Controllers
                 Coupon coupon = _mapper.Map<Coupon>(couponDto);
                 var response = _dbContext.Coupons.Add(coupon);
                 var result = _dbContext.SaveChanges() > 0;
+
+                // Create Coupon in Stripe
+                var options = new Stripe.CouponCreateOptions
+                {
+                    AmountOff = 30,
+                    Name = couponDto.CouponCode,
+                    Currency = "inr",
+                    Id = couponDto.CouponCode
+                };
+                var service = new Stripe.CouponService();
+                service.Create(options);
+                // End
+
                 return new()
                 {
                     Result = _mapper.Map<CouponDto>(coupon)
@@ -117,7 +129,7 @@ namespace Mango.Services.CouponApi.Controllers
 
         [HttpPut]
         [Route("UpdateCoupon")]
-		[Authorize(Roles = StaticDetails.RoleAdmin)]
+		[Authorize(Roles = "ADMIN")]
 		public ResponseDto UpdateCoupon([FromBody] CouponDto couponDto)
         {
             try
@@ -142,7 +154,7 @@ namespace Mango.Services.CouponApi.Controllers
 
         [HttpDelete]
         [Route("DeleteCoupon")]
-		[Authorize(Roles = StaticDetails.RoleAdmin)]
+		[Authorize(Roles = "ADMIN")]
 		public ResponseDto DeleteCoupon([FromQuery] int id)
         {
             try
@@ -150,6 +162,12 @@ namespace Mango.Services.CouponApi.Controllers
                 var coupon = _dbContext.Coupons.First(c => c.CouponId == id);
                 _dbContext.Remove(coupon);
                 var result = _dbContext.SaveChanges() > 0;
+
+                // Delete Coupon from Stripe
+                var service = new Stripe.CouponService();
+                service.Delete(coupon.CouponCode);
+                // End
+
                 return new()
                 {
                     Result = _mapper.Map<CouponDto>(coupon)

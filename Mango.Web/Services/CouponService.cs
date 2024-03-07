@@ -64,7 +64,7 @@ namespace Mango.Web.Services
             return await _baseService.SendAsync(new RequestDto()
             {
                 ApiType = StaticDetails.ApiType.PUT,
-                Url = StaticDetails.CouponApiBaseUrl + "/api/CouponApi/DeleteCoupon",
+                Url = StaticDetails.CouponApiBaseUrl + "/api/CouponApi/UpdateCoupon",
                 Data = couponDto,
             });
         }

@@ -18,16 +18,26 @@ namespace Mango.Web
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddHttpClient();
             builder.Services.AddHttpClient<ICouponService, CouponService>();
+			builder.Services.AddHttpClient<IProductService, ProductService>();
+            builder.Services.AddHttpClient<ICartService, CartService>();
+            builder.Services.AddHttpClient<IOrderService, OrderService>();
 
             // Configure Coupon service Url
             StaticDetails.CouponApiBaseUrl = builder.Configuration["ServiceUrls:CouponApi"];
             StaticDetails.AuthApiBaseUrl = builder.Configuration["ServiceUrls:AuthApi"];
+            StaticDetails.ProductApiBaseUrl = builder.Configuration["ServiceUrls:ProductApi"];
+            StaticDetails.ShoppingCartBaseUrl = builder.Configuration["ServiceUrls:ShoppingCartApi"];
+            StaticDetails.OrderApiBaseUrl = builder.Configuration["ServiceUrls:OrderApi"];
 
             // Configure All Services
             builder.Services.AddScoped<IBaseService, BaseService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenProvider, TokenProvider>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
+
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
             {
                 options.ExpireTimeSpan = TimeSpan.FromHours(10);
