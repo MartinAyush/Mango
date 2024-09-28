@@ -70,7 +70,7 @@ Follow these steps to set up and run the project locally:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/dotnet-microservices-ecommerce.git
+   git clone https://github.com/MartinAyush/Insta-Basket.git
    cd dotnet-microservices-ecommerce
    ```
 
